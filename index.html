@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تقويم بلس الاحترافي</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #080c14;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            direction: rtl;
+        }
+
+        .calendar-card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(145deg, #151c2c, #0d131f);
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 
+                        0 0 25px rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Header Layout */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:active {
+            transform: scale(0.9);
+            background: #38bdf8;
+            color: #fff;
+        }
+
+        .month-year-title {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            min-width: 90px;
+        }
+
+        .month-name {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .year-name {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .today-btn {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+            transition: all 0.2s ease;
+        }
+
+        .today-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Weekdays Row */
+        .weekdays-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .weekday-name {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        .weekend-title {
+            color: #f43f5e;
+        }
+
+        /* Days Grid */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .day-empty {
+            background-color: transparent;
+        }
+
+        /* Highlight for Today */
+        .day-today {
+            background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+            color: #ffffff !important;
+            font-weight: 800;
+            font-size: 1.05rem;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.7),
+                        0 4px 10px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1);
+            z-index: 2;
+        }
+
+        /* Highlight for Salary Day */
+        .day-salary {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: #ffffff !important;
+            font-weight: 800;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+            border: 1px solid #6ee7b7;
+        }
+
+        .day-salary::after {
+            content: '💳';
+            position: absolute;
+            top: -5px;
+            left: -3px;
+            font-size: 0.65rem;
+        }
+
+        /* Info Footer */
+        .info-footer {
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .info-tag {
+            background: #1e293b;
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .salary-tag {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calendar-card">
+        <!-- Header -->
+        <div class="calendar-header">
+            <div class="month-nav">
+                <button class="nav-btn" onclick="changeMonth(-1)">&#10095;</button>
+                <div class="month-year-title">
+                    <span id="monthTitle" class="month-name">-</span>
+                    <span id="yearTitle" class="year-name">-</span>
+                </div>
+                <button class="nav-btn" onclick="changeMonth(1)">&#10094;</button>
+            </div>
+            <button class="today-btn" onclick="resetToToday()">اليوم</button>
+        </div>
+
+        <!-- Weekdays Header -->
+        <div class="weekdays-grid">
+            <span class="weekday-name">أحد</span>
+            <span class="weekday-name">إثنين</span>
+            <span class="weekday-name">ثلاثاء</span>
+            <span class="weekday-name">أربعاء</span>
+            <span class="weekday-name">خميس</span>
+            <span class="weekday-name weekend-title">جمعة</span>
+            <span class="weekday-name weekend-title">سبت</span>
+        </div>
+
+        <!-- Days Grid -->
+        <div id="daysContainer" class="days-grid"></div>
+
+        <!-- Info Footer -->
+        <div class="info-footer">
+            <span id="dayDetails">اليوم الحالي</span>
+            <span id="salaryCountdownTag" class="info-tag salary-tag">-</span>
+        </div>
+    </div>
+
+    <script>
+        var monthNames = [
+            'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+            'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
+        ];
+
+        var today = new Date();
+        var viewYear = today.getFullYear();
+        var viewMonth = today.getMonth();
+
+        // حساب يوم صرف الراتب الفعلي وفق قواعد العطلة الأسبوعية
+        function getActualSalaryDay(year, month) {
+            var date = new Date(year, month, 27);
+            var dayOfWeek = date.getDay(); // 5 = الجمعة, 6 = السبت
+            if (dayOfWeek === 5) {
+                return 26; // قدمه للخميس
+            } else if (dayOfWeek === 6) {
+                return 28; // أخره للأحد
+            }
+            return 27;
+        }
+
+        function renderCalendar() {
+            document.getElementById('monthTitle').innerText = monthNames[viewMonth];
+            document.getElementById('yearTitle').innerText = viewYear;
+
+            var container = document.getElementById('daysContainer');
+            container.innerHTML = '';
+
+            var firstDay = new Date(viewYear, viewMonth, 1).getDay();
+            var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+            var salaryDayForViewMonth = getActualSalaryDay(viewYear, viewMonth);
+
+            for (var e = 0; e < firstDay; e++) {
+                var emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell day-empty';
+                container.appendChild(emptyCell);
+            }
+
+            for (var d = 1; d <= daysInMonth; d++) {
+                var dayCell = document.createElement('div');
+                dayCell.className = 'day-cell';
+                dayCell.innerText = d;
+
+                var isToday = (d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear());
+                var isSalaryDay = (d === salaryDayForViewMonth);
+
+                if (isToday) {
+                    dayCell.classList.add('day-today');
+                } else if (isSalaryDay) {
+                    dayCell.classList.add('day-salary');
+                }
+
+                container.appendChild(dayCell);
+            }
+
+            // تحديث تفاصيل اليوم والتاريخ
+            document.getElementById('dayDetails').innerText = "اليوم: " + today.getDate() + " " + monthNames[today.getMonth()] + " " + today.getFullYear();
+            
+            // حساب العداد التنازلي للراتب القادم بناءً على اليوم الحالي الفعلي
+            var currentSalaryDay = getActualSalaryDay(today.getFullYear(), today.getMonth());
+            var targetSalaryDate;
+
+            if (today.getDate() <= currentSalaryDay) {
+                targetSalaryDate = new Date(today.getFullYear(), today.getMonth(), currentSalaryDay);
+            } else {
+                var nextMonth = today.getMonth() + 1;
+                var nextYear = today.getFullYear();
+                if (nextMonth > 11) {
+                    nextMonth = 0;
+                    nextYear++;
+                }
+                var nextSalaryDay = getActualSalaryDay(nextYear, nextMonth);
+                targetSalaryDate = new Date(nextYear, nextMonth, nextSalaryDay);
+            }
+
+            var timeDiff = targetSalaryDate.getTime() - new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+            var daysLeft = Math.round(timeDiff / (1000 * 3600 * 24));
+            
+            var salaryTag = document.getElementById('salaryCountdownTag');
+            if (daysLeft === 0) {
+                salaryTag.innerText = "اليوم موعد الراتب 🥳";
+            } else {
+                salaryTag.innerText = "باقي للراتب: " + daysLeft + " يوم 💳";
+            }
+        }
+
+        function changeMonth(direction) {
+            viewMonth += direction;
+            if (viewMonth > 11) {
+                viewMonth = 0;
+                viewYear++;
+            } else if (viewMonth < 0) {
+                viewMonth = 11;
+                viewYear--;
+            }
+            renderCalendar();
+        }
+
+        function resetToToday() {
+            viewYear = today.getFullYear();
+            viewMonth = today.getMonth();
+            renderCalendar();
+        }
+
+        renderCalendar();
+    </script>
+</body>
+</html>
+
